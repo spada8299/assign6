@@ -23,13 +23,14 @@
         user.set("password", $('#password').val());
         // username ,email , passwod 一定都要有
         user.set("role", $('input[name="role"]:checked').val());
+        user.set("attend", false);
 
         user.signUp(null,{
           success : function(user){     // 註冊成功後會執行的 callback
             console.log(user);
             alert("使用者註冊成功");
           },
-          error : function(course,error){ // 註冊失敗後會執行的 callback
+          error : function(user,error){ // 註冊失敗後會執行的 callback
             console.log(error) ;
             alert(error.message);
           }
