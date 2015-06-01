@@ -9,9 +9,40 @@
   <link rel="stylesheet" href="css/css.css">
 
   <!--引入初始化 Parse 的 js 檔案-->
-  <script type="text/javascript" src="<!--引入初始化 Parse 的 js 檔案-->"></script>
+  <script type="text/javascript" src="js/key.js"></script>
   <script  type="text/javascript">
     $(document).ready(function(){
+      var currentUser = Parse.User.current();
+      if(currentUser){
+        if(currentUser.attributes.role==="student"){
+          alert("您沒有閱讀權限。");
+          window.location = "index.html";
+          return null;
+        }
+      } else {
+        alert("您尚未登入，即將前往登入頁面。");
+        window.location = "logIn.html";
+        return null;
+      }
+
+      var AttendantList = Parse.Object.extend("AttendantList");
+      var allAttendantListQuery = new Parse.Query(AttendantList);
+
+      allAttendantListQuery.find({
+        success: function(ListArray) {
+          console.log(ListArray);
+          for(var i=0; i<ListArray.length; i++){
+            attendantList = ListArray[i];
+            $('#table').append('<tr data-courseid="'+ attendantList.id +'">\
+                    <td>'+ attendantList.get('name') +'</td>\
+                  </tr>');
+          }
+        },
+        error: function(error) {
+          console.log(error) ;
+          alert(error.message);
+        }
+      });
       console.log('document ready');
       /* 要判斷使用者角色，避免不應該看到的人進到此頁面 */
         // 提示 1 : 將非老師的角色轉址到 index 頁面

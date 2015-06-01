@@ -9,10 +9,54 @@
   <link rel="stylesheet" href="css/css.css">
 
   <!--引入初始化 Parse 的 js 檔案-->
-  <script type="text/javascript" src="<!--引入初始化 Parse 的 js 檔案-->"></script>
+  <script type="text/javascript" src="js/key.js"></script>
   <script  type="text/javascript">
     $(document).on('submit','#logInForm',function(e){
-      console.log('logIn submit');
+
+      e.preventDefault();  // 避免 form submit 完成後 轉址
+      console.log ("login") ;
+      var username = $('#username').val() ;
+      var password = $('#password').val() ;
+
+
+    // 用 Parse.User.current() 判定使用者是否是登入的狀態，這裏還沒登入，會是 null
+      console.log("登入之前的 Parse.User.current()  : ", Parse.User.current() /*請完成程式碼部分*/) ;
+
+      Parse.User.logIn( username , password , {
+        success: function(user) {
+        // 到 console 看看 Parse.User.current()  的東西
+          console.log("登入之後的 Parse.User.current()  : ", Parse.User.current()/*請完成程式碼部分*/) ;
+          var currentUser = Parse.User.current();
+          alert('登入成功');
+          var name = currentUser.attributes.username;
+          var role = currentUser.attributes.role;
+          
+          var AttendantList = Parse.Object.extend("AttendantList");
+          var allAttendantListQuery = new Parse.Query(AttendantList);
+          
+          if(role==="student"){  
+            var attendantList = new AttendantList();
+            attendantList.set("name", name);
+            attendantList.save(null, {
+              success: function(attendantList) {
+                console.log(attendantList);
+                alert("簽到成功");
+              },
+              error: function(attendantList, error) {
+                // console.log(error);
+                // alert(error.message);
+              }
+            });
+          }
+          window.location = "index.html";
+          return null;
+        // window.location = 'courseList.html' ;
+      },
+        error: function(user, error) {
+          console.log(error) ;
+          alert(error.message);
+      }
+    });//endof login
       /* 請閱讀完 html 後在這裡填入送出表單後需要執行的程式碼 */
         // 提示1 : 記得使用 preventDefault 方程 避免表單轉址
         // 提示2 : 請在使用者登入成功後，自動幫助使用者簽到，
